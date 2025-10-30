@@ -14,6 +14,7 @@
           v-model:selectedKeys="current"
           mode="horizontal"
           :items="items"
+          @click="doMenuClick"
         />
       </a-col>
       <a-col flex="120px">
@@ -31,7 +32,7 @@
 import { h, ref } from 'vue';
 import { HomeOutlined ,GithubOutlined, QuestionOutlined} from '@ant-design/icons-vue';
 import { MenuProps } from 'ant-design-vue';
-const current = ref<string[]>(['mail']);
+//const current = ref<string[]>(['mail']);
 const items = ref<MenuProps['items']>([
   {
     key: '/',
@@ -51,10 +52,27 @@ const items = ref<MenuProps['items']>([
     label: h('a', { href: 'https://github.com/lumiere3', target: '_blank' }, '我的'),
     title: '我的',
   },
+]);
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+// 路由跳转事件
+const doMenuClick = ({ key }: { key: string }) => {
+  router.push({
+    path: key,
+  });
+};
+
+// 当前选中菜单
+const current = ref<string[]>([]);
+// 监听路由变化，更新当前选中菜单
+router.afterEach((to, from, next) => {
+  current.value = [to.path];
+});
 
 
 
-  ]);
 </script>
 
 <style scoped>
