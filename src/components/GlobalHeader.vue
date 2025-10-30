@@ -1,0 +1,75 @@
+<template>
+  <div id="globalHeader">
+    <a-row :wrap="false">
+      <a-col flex="200px">
+        <RouterLink to="/">
+          <div class="title-bar">
+            <img class="logo" src="../assets/logo.png" alt="logo" />
+            <div class="title">云图库</div>
+          </div>
+        </RouterLink>
+      </a-col>
+      <a-col flex="auto">
+        <a-menu
+          v-model:selectedKeys="current"
+          mode="horizontal"
+          :items="items"
+        />
+      </a-col>
+      <a-col flex="120px">
+        <div class="user-login-status">
+          <a-button type="primary" href="/user/login">登录</a-button>
+        </div>
+      </a-col>
+    </a-row>
+  </div>
+
+</template>
+
+
+<script lang="ts" setup>
+import { h, ref } from 'vue';
+import { HomeOutlined ,GithubOutlined, QuestionOutlined} from '@ant-design/icons-vue';
+import { MenuProps } from 'ant-design-vue';
+const current = ref<string[]>(['mail']);
+const items = ref<MenuProps['items']>([
+  {
+    key: '/',
+    icon: () => h(HomeOutlined),
+    label: '主页',
+    title: '主页',
+  },
+  {
+    key: '/about',
+    icon: () => h(QuestionOutlined),
+    label: '关于',
+    title: '关于',
+  },
+  {
+    key: 'others',
+    icon: () => h(GithubOutlined),
+    label: h('a', { href: 'https://github.com/lumiere3', target: '_blank' }, '我的'),
+    title: '我的',
+  },
+
+
+
+  ]);
+</script>
+
+<style scoped>
+#globalHeader .title-bar{
+  display: flex;
+  align-items: center;
+}
+ .logo{
+  height: 48px;
+}
+
+ .title{
+   color: black;
+   font-size: 18px;
+   margin-left: 16px;
+ }
+
+</style>
