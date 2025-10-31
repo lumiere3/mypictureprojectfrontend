@@ -22,8 +22,6 @@ import GlobalHeader from '@/components/GlobalHeader.vue'
 </script>
 
 
-
-
 <style scoped>
 #basicLayout .header{
   background: white;

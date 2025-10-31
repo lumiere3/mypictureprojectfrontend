@@ -1,0 +1,39 @@
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { getLoginUserUsingGet } from '@/api/userController'
+
+
+export const useLoginUserStore = defineStore("loginUser", () => {
+  const loginUser = ref<API.LoginUserVO>({
+    userName: "未登录",
+  });
+
+  /**
+   * 获取登录用户
+   */
+  async function fetchLoginUser() {
+    // const res = await getCurrentUser();
+    // if (res.data.code === 0 && res.data.data) {
+    //   loginUser.value = res.data.data;
+    // }
+    const res = await getLoginUserUsingGet()
+    //获取当前的用户信息
+    if (res.data.code === 0 && res.data.data) {
+      loginUser.value = res.data.data
+    }
+
+  }
+
+  /**
+   * 设置登录用户
+   * @param newLoginUser
+   */
+  function setLoginUser(newLoginUser: any) {
+    loginUser.value = newLoginUser;
+  }
+
+  /**
+   * 返回
+   */
+  return { loginUser, setLoginUser, fetchLoginUser };
+});
