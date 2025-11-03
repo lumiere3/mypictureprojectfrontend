@@ -13,12 +13,12 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore'
 /**
  * 获取用户登录信息
  */
-const loginUserStore = useLoginUserStore()
+/*const loginUserStore = useLoginUserStore()
 loginUserStore.fetchLoginUser()
 
 healthUsingGet().then((res) => {
   console.log(res)
-})
+})*/
 </script>
 
 
