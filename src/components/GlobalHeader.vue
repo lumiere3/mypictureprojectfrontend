@@ -17,17 +17,21 @@
           @click="doMenuClick"
         />
       </a-col>
-<!-- 用户信息展示栏-->
+      <!-- 用户信息展示栏-->
       <a-col flex="120px">
         <div class="user-login-status">
           <div v-if="loginUserStore.loginUser.id">
             <a-dropdown>
               <a-space>
                 <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-                {{loginUserStore.loginUser.userName ?? '未命名用户'}}
+                {{ loginUserStore.loginUser.userName ?? '未命名用户' }}
               </a-space>
               <template #overlay>
                 <a-menu>
+                  <a-menu-item @click="toUserPage">
+                    <UserOutlined />
+                    个人中心
+                  </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
                     退出登录
@@ -43,18 +47,19 @@
       </a-col>
     </a-row>
   </div>
-
 </template>
 
-
 <script lang="ts" setup>
-import { h, ref } from 'vue';
-import { HomeOutlined ,GithubOutlined, EditOutlined, LogoutOutlined} from '@ant-design/icons-vue';
-import { MenuProps, message } from 'ant-design-vue';
+import { computed, h, reactive, ref } from 'vue'
+import { HomeOutlined, GithubOutlined, EditOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { MenuProps, message } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
+import { useLoginUserStore } from '@/stores/useLoginUserStore'
+import { userLogoutUsingPost } from '@/api/userController'
 //const current = ref<string[]>(['mail']);
-const loginUserStore = useLoginUserStore();
-
-const items = ref<MenuProps['items']>([
+const loginUserStore = useLoginUserStore()
+// 原始数据
+const originItems = [
   {
     key: '/',
     icon: () => h(HomeOutlined),
@@ -70,63 +75,85 @@ const items = ref<MenuProps['items']>([
   {
     key: 'others',
     icon: () => h(GithubOutlined),
-    label: h('a', { href: 'https://github.com/lumiere3', target: '_blank' }, '我的'),
-    title: '我的',
+    label: h('a', { href: 'https://github.com/lumiere3', target: '_blank' }, '关于作者'),
+    title: '关于作者',
   },
-]);
+]
 
-import { useRouter } from "vue-router";
-import { useLoginUserStore } from '@/stores/useLoginUserStore'
-import { userLogoutUsingPost } from '@/api/userController'
-const router = useRouter();
+// 过滤菜单 -> 用户如果还没有登录, 就不让用户看到'管理用户'的页面
+const filterMenus = (menus = [] as MenuProps['items']) => {
+  // 遍历我们的菜单, 如果是以'/admin'开头,就代表是管理员才能看到的页面
+  return menus?.filter((menu) => {
+    if (menu?.key?.startsWith('/admin')) {
+      // 查看用户的权限(角色)
+      const loginUser = loginUserStore.loginUser
+      if (!loginUser || loginUser.userRole !== 'admin') {
+        return false
+      }
+    }
+    return true
+  })
+}
+
+//展示菜单
+const items = computed(() => {
+  return  filterMenus(originItems)
+})
+
+const router = useRouter()
 
 // 路由跳转事件
 const doMenuClick = ({ key }: { key: string }) => {
   router.push({
     path: key,
-  });
-};
+  })
+}
 
 // 当前选中菜单
-const current = ref<string[]>([]);
+const current = ref<string[]>([])
 // 监听路由变化，更新当前选中菜单
 router.afterEach((to, from, next) => {
-  current.value = [to.path];
-});
+  current.value = [to.path]
+})
 
 // 用户注销
 const doLogout = async () => {
-  const res = await userLogoutUsingPost();
-  if(res.data.code === 0){
+  const res = await userLogoutUsingPost()
+  if (res.data.code === 0) {
     loginUserStore.setLoginUser({
       userName: '未登录',
     })
-     message.success("退出成功!")
+    message.success('退出成功!')
     router.push({
       path: '/user/login',
     })
-  }else{
-    message.error("退出登录失败!" + res.data.message);
+  } else {
+    message.error('退出登录失败!' + res.data.message)
   }
 }
 
+// 去到用户也
+const toUserPage = () => {
+  router.push({
+    path: '/user',
+  })
+}
 
 
 </script>
 
 <style scoped>
-#globalHeader .title-bar{
+#globalHeader .title-bar {
   display: flex;
   align-items: center;
 }
- .logo{
+.logo {
   height: 48px;
 }
 
- .title{
-   color: black;
-   font-size: 18px;
-   margin-left: 16px;
- }
-
+.title {
+  color: black;
+  font-size: 18px;
+  margin-left: 16px;
+}
 </style>
