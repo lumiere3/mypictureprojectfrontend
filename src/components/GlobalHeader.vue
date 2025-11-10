@@ -51,7 +51,7 @@
 
 <script lang="ts" setup>
 import { computed, h, reactive, ref } from 'vue'
-import { HomeOutlined, GithubOutlined, EditOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, GithubOutlined, EditOutlined,PlusSquareOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
@@ -71,6 +71,12 @@ const originItems = [
     icon: () => h(EditOutlined),
     label: '用户管理',
     title: '用户管理',
+  },
+  {
+    key: '/add_picture',
+    icon: () => h(PlusSquareOutlined),
+    label: '创建图片',
+    title: '创建图片',
   },
   {
     key: 'others',
