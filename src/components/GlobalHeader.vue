@@ -67,16 +67,22 @@ const originItems = [
     title: '主页',
   },
   {
+    key: '/add_picture',
+    icon: () => h(PlusSquareOutlined),
+    label: '创建图片',
+    title: '创建图片',
+  },
+  {
     key: '/admin/userManage',
     icon: () => h(EditOutlined),
     label: '用户管理',
     title: '用户管理',
   },
   {
-    key: '/add_picture',
-    icon: () => h(PlusSquareOutlined),
-    label: '创建图片',
-    title: '创建图片',
+    key: '/admin/pictureManage',
+    icon: () => h(EditOutlined),
+    label: '图片管理',
+    title: '图片管理',
   },
   {
     key: 'others',

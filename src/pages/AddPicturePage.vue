@@ -1,10 +1,19 @@
 <template>
   <div class="addPicturePage">
-    <h2 style="margin-bottom: 16px">创建图片</h2>
+    <h2 style="margin-bottom: 16px">
+      <!-- 有id就是编辑图片, 没有就是创建 -->
+      {{route.query.id ? '编辑图片' : '创建图片'}}
+    </h2>
     <!-- 图片上传组件 -->
     <PictureUpload :picture="picture" :on-success="onSuccess" />
     <!-- 图片信息表单 -->
-    <a-form name="pictureForm" layout="vertical" :model="pictureForm" @finish="handleSubmit">
+    <a-form
+      v-if="picture"
+      name="pictureForm"
+      layout="vertical"
+      :model="pictureForm"
+      @finish="handleSubmit"
+    >
       <a-form-item name="name" label="图片名称">
         <a-input v-model:value="pictureForm.name" placeholder="输入图片名称" allow-clear />
       </a-form-item>
@@ -20,6 +29,7 @@
         <a-auto-complete
           v-model:value="pictureForm.category"
           placeholder="输入图片分类"
+          :options="categoryOptions"
           allow-clear
         />
       </a-form-item>
@@ -28,6 +38,7 @@
           mode="tags"
           v-model:value="pictureForm.tags"
           placeholder="输入图片标签"
+          :options="tagsOptions"
           allow-clear
         />
       </a-form-item>
@@ -41,10 +52,15 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
-import { editPictureUsingPost, listPictureTagCategoryUsingGet } from '@/api/pictureController'
-import { useRouter } from 'vue-router'
+import {
+  editPictureUsingPost,
+  getPictureByIdUsingGet,
+  getPictureVoByIdUsingGet,
+  listPictureTagCategoryUsingGet,
+} from '@/api/pictureController'
+import { useRoute, useRouter } from 'vue-router'
 // 一个用于接收前端输入的值
 
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -91,12 +107,58 @@ const tagsOptions = ref<string[]>([])
 const getTagCategoryOptions = async () => {
   const res = await listPictureTagCategoryUsingGet()
   if (res.data.code === 0 && res.data.data) {
-    tagsOptions.value = res.data.data.tagList ?? []
-    categoryOptions.value = res.data.data.categoryList ?? []
-  }else {
+    tagsOptions.value = (res.data.data.tagList ?? []).map((data: string) => {
+      return {
+        value: data,
+        label: data,
+      }
+    })
+    categoryOptions.value = (res.data.data.categoryList ?? []).map((data: string) => {
+      return {
+        value: data,
+        label: data,
+      }
+    })
+  } else {
     message.error('获取分类和标签失败 ' + res.data.message)
   }
 }
+// 进入页面的时候获取数据
+onMounted(() => {
+  getTagCategoryOptions()
+})
+/**
+ * 现在我们来实现编辑图片功能
+ * 我们在url后面添加图片id, 就像 add_picture?pictureId=1
+ * 如果有图片id, 表示编辑图片, 否则创建图片
+ * 所以我们需要获取图片id, 并且根据图片id获取图片信息
+ * 可以使用 useRoute
+ */
+const route = useRoute()
+/**
+ * 获取原来图片的信息
+ */
+const getOldPicture = async () => {
+  const id = route.query?.id
+  //如果存在图片id, 则获取图片信息
+  if (id) {
+    const res = await getPictureVoByIdUsingGet({
+      id,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      const data = res.data.data
+      picture.value = data
+      pictureForm.name = data.name
+      pictureForm.introduction = data.introduction
+      pictureForm.category = data.category
+      pictureForm.tags = data.tags
+    }
+  }
+}
+// 首次渲染的时候获取图片信息
+onMounted(() => {
+  getOldPicture()
+})
 </script>
 
 <style scoped>

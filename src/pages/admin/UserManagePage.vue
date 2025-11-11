@@ -17,7 +17,7 @@
       </a-col>
       <!--添加新用户 -->
       <a-col>
-        <a-button type="primary" @click="showModal">添加新用户</a-button>
+        <a-button type="primary" @click="showModal">+添加新用户</a-button>
         <a-modal
           v-model:visible="visible"
           title="添加新用户"
@@ -95,20 +95,22 @@
         <!-- 操作列-->
         <template v-else-if="column.key === 'action'">
           <div>
-            <a-button
-              v-if="record.id !== loginUserStore.loginUser.id"
-              danger
-              @click="doDelete(record.id)"
+            <a-space wrap>
+              <a-button
+                v-if="record.id !== loginUserStore.loginUser.id"
+                danger
+                @click="doDelete(record.id)"
               >删除用户</a-button
-            >
-            <a-tooltip
-              v-if="record.id === loginUserStore.loginUser.id"
-              placement="top"
-              title="不能删除自己"
-            >
-              <a-button disabled>删除用户</a-button>
-            </a-tooltip>
-            <a-button @click="showUpdateModal(record)" style="margin-left: 12px">修改用户</a-button>
+              >
+              <a-tooltip
+                v-if="record.id === loginUserStore.loginUser.id"
+                placement="top"
+                title="不能删除自己"
+              >
+                <a-button disabled>删除用户</a-button>
+              </a-tooltip>
+              <a-button @click="showUpdateModal(record)" >修改用户</a-button>
+            </a-space>
           </div>
         </template>
       </template>
@@ -214,6 +216,8 @@ const total = ref(0)
 const searchParams = reactive<API.UserQueryRequest>({
   current: 1,
   pageSize: 10,
+  sortField: 'createTime',
+  sortOrder: 'ascend',
 })
 
 //分页参数
