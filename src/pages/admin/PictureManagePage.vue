@@ -28,12 +28,22 @@
             />
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" html-type="submit">搜索</a-button>
+            <a-button type="primary" html-type="submit">
+              <template #icon >
+                <SearchOutlined />
+              </template>
+              搜索
+            </a-button>
           </a-form-item>
         </a-form>
       </a-col>
       <a-col>
-        <a-button type="primary" :href="`/add_picture`">+添加图片</a-button>
+        <a-button type="primary" :href="`/add_picture`">
+          <template #icon >
+            <FileAddOutlined />
+          </template>
+          添加图片
+        </a-button>
       </a-col>
     </a-row>
 
@@ -71,8 +81,18 @@
         <template v-else-if="column.key === 'action'">
           <div>
             <a-space wrap>
-              <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">修改图片</a-button>
-              <a-button danger @click="doDelete(record.id)">删除图片</a-button>
+              <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">
+                <template #icon >
+                  <EditOutlined />
+                </template>
+                修改图片
+              </a-button>
+              <a-button danger @click="doDelete(record.id)">
+                <template #icon >
+                  <DeleteOutlined />
+                </template>
+                删除图片
+              </a-button>
             </a-space>
           </div>
         </template>
@@ -81,7 +101,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined ,SearchOutlined, FileAddOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
   deletePictureUsingPost,

@@ -144,10 +144,14 @@ const doLogout = async () => {
   }
 }
 
-// 去到用户也
+// 去到用户页
 const toUserPage = () => {
+  const loginUser = loginUserStore.loginUser
+  if (!loginUser) {
+    return
+  }
   router.push({
-    path: '/user',
+    path: `/user/${loginUser.id}`,
   })
 }
 

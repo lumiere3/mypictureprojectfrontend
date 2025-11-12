@@ -65,6 +65,12 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseUserAvatarVO_ = {
+    code?: number
+    data?: UserAvatarVO
+    message?: string
+  }
+
   type BaseResponseUserVO_ = {
     code?: number
     data?: UserVO
@@ -238,6 +244,10 @@ declare namespace API {
     userName?: string
     userProfile?: string
     userRole?: string
+  }
+
+  type UserAvatarVO = {
+    userAvatar?: string
   }
 
   type UserLoginRequest = {

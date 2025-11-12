@@ -17,7 +17,12 @@
       </a-col>
       <!--添加新用户 -->
       <a-col>
-        <a-button type="primary" @click="showModal">+添加新用户</a-button>
+        <a-button type="primary" @click="showModal">
+          <template #icon>
+            <UserAddOutlined />
+          </template>
+          添加新用户
+        </a-button>
         <a-modal
           v-model:visible="visible"
           title="添加新用户"
@@ -42,6 +47,9 @@
                 placeholder="请输入用户昵称"
                 allow-clear
               />
+            </a-form-item>
+            <a-form-item name="userAvatar" label="用户头像">
+              <AvatarUpload v-model:imageUrl="formState.userAvatar" />
             </a-form-item>
             <a-form-item name="userProfile" label="用户简介">
               <a-textarea
@@ -100,16 +108,29 @@
                 v-if="record.id !== loginUserStore.loginUser.id"
                 danger
                 @click="doDelete(record.id)"
-              >删除用户</a-button
-              >
+              ><template #icon>
+                  <DeleteOutlined />
+                </template>
+                删除用户
+              </a-button>
               <a-tooltip
                 v-if="record.id === loginUserStore.loginUser.id"
                 placement="top"
                 title="不能删除自己"
               >
-                <a-button disabled>删除用户</a-button>
+                <a-button disabled>
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                  删除用户
+                </a-button>
               </a-tooltip>
-              <a-button @click="showUpdateModal(record)" >修改用户</a-button>
+              <a-button @click="showUpdateModal(record)" >
+                <template #icon>
+                  <EditOutlined />
+                </template>
+                修改用户
+              </a-button>
             </a-space>
           </div>
         </template>
@@ -134,6 +155,11 @@
             allow-clear
           />
         </a-form-item>
+        <a-form-item name="userAvatar" label="用户头像">
+          <AvatarUpload
+            :key="updateFormState.id || 'new'"
+            v-model:imageUrl="updateFormState.userAvatar" />
+        </a-form-item>
         <a-form-item name="userProfile" label="用户简介">
           <a-textarea
             v-model:value="updateFormState.userProfile"
@@ -156,7 +182,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, UserAddOutlined ,EditOutlined} from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
   addUserUsingPost,
@@ -169,6 +195,7 @@ import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import UserAddRequest = API.UserAddRequest
+import AvatarUpload from '@/components/AvatarUpload.vue'
 
 //当前的登录用户
 const loginUserStore = useLoginUserStore()
@@ -317,13 +344,21 @@ const doDelete = async (id: string) => {
 const updateVisible = ref(false)
 
 // 展示修改用户弹窗
+// 展示修改用户弹窗
 const showUpdateModal = (record) => {
   updateVisible.value = true
-  Object.assign(updateFormState, record)
+  // 创建新的对象实例，避免引用共享
+  updateFormState.userAccount = record.userAccount || ''
+  updateFormState.userName = record.userName || ''
+  updateFormState.userProfile = record.userProfile || ''
+  updateFormState.userAvatar = record.userAvatar || ''
+  updateFormState.userRole = record.userRole || ''
+  updateFormState.id = record.id || undefined
 }
 
+
 //修改用户数据表单
-const updateFormState = reactive<API.UserAddRequest>({})
+const updateFormState = reactive<API.UserUpdateRequest>({})
 
 //修改用户
 const doUpdate = async (id: string) => {
@@ -334,6 +369,10 @@ const doUpdate = async (id: string) => {
     await fetchData()
     //关闭窗口
     updateVisible.value = false
+    // 清空表单数据
+    Object.keys(updateFormState).forEach(key => {
+      updateFormState[key] = ''
+    })
     message.info('修改用户成功!' )
     // todo
   } else {

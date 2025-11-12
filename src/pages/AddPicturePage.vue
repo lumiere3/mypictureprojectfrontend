@@ -64,7 +64,6 @@ import { useRoute, useRouter } from 'vue-router'
 // 一个用于接收前端输入的值
 
 const pictureForm = reactive<API.PictureEditRequest>({})
-
 const picture = ref<API.PictureVO>()
 const router = useRouter()
 

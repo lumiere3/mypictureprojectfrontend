@@ -163,7 +163,7 @@ onMounted(() => {
 const router = useRouter()
 const doClickPicture = (picture: API.Picture) => {
   router.push({
-    path: `picture/${picture.id}`,
+    path: `/picture/${picture.id}`,
   })
 }
 

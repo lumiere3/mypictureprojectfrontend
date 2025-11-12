@@ -44,9 +44,10 @@ const router = createRouter({
       component: PictureManagePage,
     },
     {
-      path: '/user/',
-      name: '',
+      path: '/user/:id',
+      name: '用户主页',
       component: UserPage,
+      props: true,
     },
     {
       path: '/add_picture/',
