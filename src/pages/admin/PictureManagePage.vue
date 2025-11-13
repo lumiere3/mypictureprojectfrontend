@@ -69,7 +69,14 @@
             <div>大小: {{ (record.picSize / 1024).toFixed(2) }}KB</div>
           </a-space>
         </template>
-
+        <!-- 审核信息 -->
+        <template v-if="column.dataIndex === 'reviewMessage'">
+          <a-space wrap>
+              <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
+              <div>审核信息：{{ record.reviewMessage ?? '-'}}</div>
+              <div>审核人：{{ record.reviewerId ?? '-'}}</div>
+          </a-space>
+        </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
@@ -81,6 +88,23 @@
         <template v-else-if="column.key === 'action'">
           <div>
             <a-space wrap>
+              <a-button
+                v-if="PIC_REVIEW_STATUS_ENUM.PASS !== record.reviewStatus"
+                @click="doReview(record,PIC_REVIEW_STATUS_ENUM.PASS)">
+                <template #icon >
+                  <CheckSquareOutlined />
+                </template>
+                审核通过
+              </a-button>
+              <a-button
+                v-if="PIC_REVIEW_STATUS_ENUM.REJECT !== record.reviewStatus"
+                danger
+                @click="doReview(record,PIC_REVIEW_STATUS_ENUM.REJECT)">
+                <template #icon >
+                  <CloseSquareOutlined />
+                </template>
+                审核拒绝
+              </a-button>
               <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">
                 <template #icon >
                   <EditOutlined />
@@ -101,10 +125,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { DeleteOutlined, EditOutlined ,SearchOutlined, FileAddOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined ,SearchOutlined, FileAddOutlined , CheckSquareOutlined,CloseSquareOutlined} from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
-  deletePictureUsingPost,
+  deletePictureUsingPost, doPictureReviewUsingPost,
   getPictureByIdUsingGet,
   listPictureByPageUsingPost,
   listPictureVoUsingPost,
@@ -114,6 +138,7 @@ import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useLoginPictureStore } from '@/stores/useLoginPictureStore'
 import PictureAddRequest = API.PictureAddRequest
+import { PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_MAP } from '@/constants/picture'
 
 
 
@@ -152,6 +177,10 @@ const columns = [
     title: '用户 id',
     dataIndex: 'userId',
     width: 80,
+  },
+  {
+    title: '审核信息',
+    dataIndex: 'reviewMessage',
   },
   {
     title: '创建时间',
@@ -233,6 +262,24 @@ const doDelete = async (id: string) => {
     message.error('删除失败')
   }
 }
+
+//审核图片
+const doReview = async (record: API.Picture, reviewStatus: number) => {
+  const reviewMessage = reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : '管理员操作拒绝'
+  const res = await doPictureReviewUsingPost( {
+    id: record.id,
+    reviewMessage,
+    reviewStatus,
+  })
+  if (res.data.code === 0) {
+    message.success('审核操作成功')
+    //更新数据
+    fetchData()
+  } else {
+    message.error('审核失败' + res.data.message)
+  }
+}
+
 </script>
 
 <style scoped></style>
