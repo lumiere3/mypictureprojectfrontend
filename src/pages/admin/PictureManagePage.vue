@@ -12,11 +12,7 @@
             />
           </a-form-item>
           <a-form-item label="图片类型">
-            <a-input
-              v-model:value="searchParams.category"
-              placeholder="搜索图片类型"
-              allow-clear
-            />
+            <a-input v-model:value="searchParams.category" placeholder="搜索图片类型" allow-clear />
           </a-form-item>
           <a-form-item label="图片标签">
             <a-select
@@ -27,9 +23,18 @@
               allow-clear
             />
           </a-form-item>
+          <a-form-item name="reviewStatus" label="图片标签">
+            <a-select
+              v-model:value="searchParams.reviewStatus"
+              placeholder="输入审核状态"
+              :options="PIC_REVIEW_STATUS_OPTIONS"
+              style="min-width: 180px"
+              allow-clear
+            />
+          </a-form-item>
           <a-form-item>
             <a-button type="primary" html-type="submit">
-              <template #icon >
+              <template #icon>
                 <SearchOutlined />
               </template>
               搜索
@@ -39,7 +44,7 @@
       </a-col>
       <a-col>
         <a-button type="primary" :href="`/add_picture`">
-          <template #icon >
+          <template #icon>
             <FileAddOutlined />
           </template>
           添加图片
@@ -72,9 +77,9 @@
         <!-- 审核信息 -->
         <template v-if="column.dataIndex === 'reviewMessage'">
           <a-space wrap>
-              <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
-              <div>审核信息：{{ record.reviewMessage ?? '-'}}</div>
-              <div>审核人：{{ record.reviewerId ?? '-'}}</div>
+            <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
+            <div>审核信息：{{ record.reviewMessage ?? '-' }}</div>
+            <div>审核人：{{ record.reviewerId ?? '-' }}</div>
           </a-space>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
@@ -90,8 +95,9 @@
             <a-space wrap>
               <a-button
                 v-if="PIC_REVIEW_STATUS_ENUM.PASS !== record.reviewStatus"
-                @click="doReview(record,PIC_REVIEW_STATUS_ENUM.PASS)">
-                <template #icon >
+                @click="doReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+              >
+                <template #icon>
                   <CheckSquareOutlined />
                 </template>
                 审核通过
@@ -99,36 +105,72 @@
               <a-button
                 v-if="PIC_REVIEW_STATUS_ENUM.REJECT !== record.reviewStatus"
                 danger
-                @click="doReview(record,PIC_REVIEW_STATUS_ENUM.REJECT)">
-                <template #icon >
+                @click="showReject(record)"
+              >
+                <template #icon>
                   <CloseSquareOutlined />
                 </template>
                 审核拒绝
               </a-button>
               <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">
-                <template #icon >
+                <template #icon>
                   <EditOutlined />
                 </template>
                 修改图片
               </a-button>
-              <a-button danger @click="doDelete(record.id)">
-                <template #icon >
-                  <DeleteOutlined />
-                </template>
-                删除图片
-              </a-button>
+                <a-popconfirm
+                  title="确定要删除图片吗?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="doDelete(record.id)"
+                >
+                  <a-button danger >
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                    删除图片
+                  </a-button>
+                </a-popconfirm>
             </a-space>
           </div>
         </template>
       </template>
+
+
     </a-table>
+     <!-- 表示审核拒绝图片的弹窗-->
+    <a-modal
+      v-model:open="openReject"
+      title="拒绝图片"
+      @ok="handleRejectConfirm"
+      ok-text="确定"
+      cancel-text="取消"
+    >
+      <a-form :model="currentRecord">
+        <a-form-item label="拒绝理由">
+          <a-textarea
+            v-model:value="currentRecord.reviewMessage"
+            placeholder="请输入拒绝理由"
+            allow-clear
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 <script lang="ts" setup>
-import { DeleteOutlined, EditOutlined ,SearchOutlined, FileAddOutlined , CheckSquareOutlined,CloseSquareOutlined} from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  FileAddOutlined,
+  CheckSquareOutlined,
+  CloseSquareOutlined,
+} from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
-  deletePictureUsingPost, doPictureReviewUsingPost,
+  deletePictureUsingPost,
+  doPictureReviewUsingPost,
   getPictureByIdUsingGet,
   listPictureByPageUsingPost,
   listPictureVoUsingPost,
@@ -138,9 +180,11 @@ import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useLoginPictureStore } from '@/stores/useLoginPictureStore'
 import PictureAddRequest = API.PictureAddRequest
-import { PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_MAP } from '@/constants/picture'
-
-
+import {
+  PIC_REVIEW_STATUS_ENUM,
+  PIC_REVIEW_STATUS_MAP,
+  PIC_REVIEW_STATUS_OPTIONS,
+} from '@/constants/picture'
 
 const columns = [
   {
@@ -264,9 +308,26 @@ const doDelete = async (id: string) => {
 }
 
 //审核图片
+// 拒绝审核弹窗
+const openReject = ref(false)
+const currentRecord = ref<API.Picture>({})
+const showReject = (record : API.Picture) => {
+  currentRecord.value = {
+    ...record,
+    reviewMessage: '管理员拒绝',
+  }
+  openReject.value = true
+}
+// 添加处理拒绝确认的方法
+const handleRejectConfirm = async () => {
+  await doReview(currentRecord.value, PIC_REVIEW_STATUS_ENUM.REJECT);
+  openReject.value = false;
+}
+
 const doReview = async (record: API.Picture, reviewStatus: number) => {
-  const reviewMessage = reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : '管理员操作拒绝'
-  const res = await doPictureReviewUsingPost( {
+  const reviewMessage =
+    reviewStatus === PIC_REVIEW_STATUS_ENUM.PASS ? '管理员操作通过' : record.reviewMessage
+  const res = await doPictureReviewUsingPost({
     id: record.id,
     reviewMessage,
     reviewStatus,
@@ -279,7 +340,6 @@ const doReview = async (record: API.Picture, reviewStatus: number) => {
     message.error('审核失败' + res.data.message)
   }
 }
-
 </script>
 
 <style scoped></style>

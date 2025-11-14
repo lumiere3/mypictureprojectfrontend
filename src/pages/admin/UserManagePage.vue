@@ -104,17 +104,23 @@
         <template v-else-if="column.key === 'action'">
           <div>
             <a-space wrap>
-              <a-button
-                v-if="record.id !== loginUserStore.loginUser.id"
-                danger
-                @click="doDelete(record.id)"
-              ><template #icon>
+              <template v-if="record.id !== loginUserStore.loginUser.id">
+                <a-popconfirm
+                title="确定要删除用户吗?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="doDelete(record.id)"
+              >
+                <a-button danger>
+                  <template #icon>
                   <DeleteOutlined />
                 </template>
-                删除用户
-              </a-button>
-              <a-tooltip
-                v-if="record.id === loginUserStore.loginUser.id"
+                  删除用户
+                </a-button>
+              </a-popconfirm>
+              </template>
+              <template v-else>
+                <a-tooltip
                 placement="top"
                 title="不能删除自己"
               >
@@ -125,6 +131,7 @@
                   删除用户
                 </a-button>
               </a-tooltip>
+              </template>
               <a-button @click="showUpdateModal(record)" >
                 <template #icon>
                   <EditOutlined />

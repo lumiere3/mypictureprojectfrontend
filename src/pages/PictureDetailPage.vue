@@ -45,29 +45,43 @@
           </a-descriptions>
           <!-- 补充一个操作 -->
           <a-space wrap>
-            <a-button v-if="canEditOrDelete" @click="doEdit">
+            <template v-if="canEditOrDelete">
+              <a-button  @click="doEdit">
               <template #icon>
                 <EditOutlined />
               </template>
               编辑图片
             </a-button>
-            <!-- 否则不能编辑 -->
-            <a-tooltip v-if="!canEditOrDelete" placement="top" title="没有权限">
+            </template>
+            <template v-else>
+              <!-- 否则不能编辑 -->
+            <a-tooltip  placement="top" title="没有编辑权限">
               <a-button disabled>
                 <template #icon>
                   <DeleteOutlined />
                 </template>
-                删除图片
+                编辑图片
               </a-button>
             </a-tooltip>
+            </template>
             <!-- 删除图片同理 -->
-            <a-button v-if="canEditOrDelete" danger @click="doDelete">
-              <template #icon>
-                <DeleteOutlined />
-              </template>
-              删除图片
-            </a-button>
-            <a-tooltip v-if="!canEditOrDelete" placement="top" title="没有权限">
+            <template v-if="canEditOrDelete">
+              <a-popconfirm
+              title="确定要删除图片吗?"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="doDelete"
+            >
+              <a-button  danger>
+                <template #icon>
+                  <DeleteOutlined />
+                </template>
+                删除图片
+              </a-button>
+            </a-popconfirm>
+            </template>
+            <template v-else>
+              <a-tooltip placement="top" title="没有删除权限">
               <a-button disabled>
                 <template #icon>
                   <DeleteOutlined />
@@ -75,8 +89,9 @@
                 删除图片
               </a-button>
             </a-tooltip>
+            </template>
             <!-- 下载图片 -->
-            <a-button @click="doDownload">
+            <a-button @click="doDownload" type="primary">
               <template #icon>
                 <DownloadOutlined />
               </template>
@@ -103,6 +118,7 @@ import { useRouter } from 'vue-router'
 import { downloadImage, formatSize } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import router from '@/router'
+import { PIC_REVIEW_STATUS_MAP } from '@/constants/picture'
 
 //loginUserStore 来校验用户的权限 -> 只有管理员和图片的上传者才可以修改和删除图片
 const loginUserStore = useLoginUserStore()
