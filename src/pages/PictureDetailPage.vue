@@ -97,18 +97,28 @@
               </template>
               下载图片
             </a-button>
+            <!-- 快捷审核  -->
+<!--            <template v-if="canReview">
+              <a-button  @click="showReview">
+                <template #icon>
+                  <SelectOutlined  />
+                </template>
+                审核图片
+              </a-button>
+            </template>-->
           </a-space>
         </a-card>
       </a-col>
     </a-row>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, DeleteOutlined, DownloadOutlined ,CloseSquareOutlined,SelectOutlined} from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
-  deletePictureUsingPost,
+  deletePictureUsingPost, getPictureByIdUsingGet,
   getPictureVoByIdUsingGet,
   listPictureTagCategoryUsingGet,
   listPictureVoByPageUsingPost,
@@ -181,6 +191,9 @@ const doEdit = () => {
 const doDownload = () => {
   downloadImage(picture.value.url)
 }
+
+//权限检测 -> 是否能审核 -> 只有管理员可以
+
 </script>
 
 <style scoped>

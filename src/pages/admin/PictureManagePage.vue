@@ -62,7 +62,12 @@
         </template>
         <template v-if="column.dataIndex === 'tags'">
           <a-space wrap>
-            <a-tag v-for="tag in JSON.parse(record.tags || '[]')" :key="tag">{{ tag }}</a-tag>
+            <a-tag
+              v-for="tag in JSON.parse(record.tags || '[]')" :key="tag"
+              color="blue"
+            >
+              {{ tag }}
+            </a-tag>
           </a-space>
         </template>
         <template v-if="column.dataIndex === 'picInfo'">

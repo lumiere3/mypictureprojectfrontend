@@ -7,8 +7,8 @@
           <a-form-item label="账号">
             <a-input v-model:value="searchParams.userAccount" placeholder="输入账号" allow-clear />
           </a-form-item>
-          <a-form-item label="用户名">
-            <a-input v-model:value="searchParams.userName" placeholder="输入用户名" allow-clear />
+          <a-form-item label="用户昵称">
+            <a-input v-model:value="searchParams.userName" placeholder="输入昵称" allow-clear />
           </a-form-item>
           <a-form-item>
             <a-button type="primary" html-type="submit">搜索</a-button>
@@ -70,7 +70,7 @@
             >
               <a-radio-group v-model:value="formState.userRole">
                 <a-radio value="user">普通用户</a-radio>
-                <a-radio value="admin">管理员</a-radio>
+                <a-radio value="admin" >管理员</a-radio>
               </a-radio-group>
             </a-form-item>
           </a-form>
@@ -83,6 +83,12 @@
     <!-- 表格部分-->
     <a-table :columns="columns" :data-source="dataList" :pagination @change="doTableChange">
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'userAccount'">
+          <template v-if="record.userRole === 'admin'">
+            <strong>{{record.userAccount}}</strong>
+          </template>
+        </template>
+
         <template v-if="column.dataIndex === 'userAvatar'">
           <a-image :src="record.userAvatar" width="64px"></a-image>
         </template>
@@ -218,7 +224,7 @@ const columns = [
     dataIndex: 'userAccount',
   },
   {
-    title: '用户名',
+    title: '用户昵称',
     dataIndex: 'userName',
   },
   {
@@ -226,7 +232,7 @@ const columns = [
     dataIndex: 'userAvatar',
   },
   {
-    title: '简介',
+    title: '用户简介',
     dataIndex: 'userProfile',
   },
   {
