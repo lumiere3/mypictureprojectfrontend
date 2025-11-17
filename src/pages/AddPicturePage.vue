@@ -4,8 +4,17 @@
       <!-- 有id就是编辑图片, 没有就是创建 -->
       {{route.query.id ? '编辑图片' : '创建图片'}}
     </h2>
-    <!-- 图片上传组件 -->
-    <PictureUpload :picture="picture" :on-success="onSuccess" />
+    <!-- 使用tabs组件 选择图片的上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="文件上传">
+        <!-- 图片上传组件 -->
+        <PictureUpload :picture="picture" :on-success="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL上传">
+        <!-- 图片上传组件 -> 通过URL -->
+        <UrlPictureUpload :picture="picture" :on-success="onSuccess"></UrlPictureUpload>
+      </a-tab-pane>
+    </a-tabs>
     <!-- 图片信息表单 -->
     <a-form
       v-if="picture"
@@ -61,11 +70,14 @@ import {
   listPictureTagCategoryUsingGet,
 } from '@/api/pictureController'
 import { useRoute, useRouter } from 'vue-router'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 // 一个用于接收前端输入的值
 
 const pictureForm = reactive<API.PictureEditRequest>({})
 const picture = ref<API.PictureVO>()
 const router = useRouter()
+//选择上传的图片上传方式
+const uploadType = ref<'file' | 'url'>('file')
 
 /**
  * 图片上传成功, 解析图片信息
