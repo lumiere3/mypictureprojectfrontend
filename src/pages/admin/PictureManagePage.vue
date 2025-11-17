@@ -43,12 +43,30 @@
         </a-form>
       </a-col>
       <a-col>
-        <a-button type="primary" :href="`/add_picture`">
-          <template #icon>
-            <FileAddOutlined />
-          </template>
-          添加图片
-        </a-button>
+        <a-space>
+          <a-tooltip
+            placement="top"
+            title="根据关键词抓取多张图片"
+          >
+            <a-button type="primary" :href="`/add_picture/batch`">
+              <template #icon>
+                <FileAddOutlined />
+              </template>
+              批量导入
+            </a-button>
+          </a-tooltip>
+          <a-tooltip
+            placement="top"
+            title="手动添加单张图片"
+          >
+            <a-button type="primary" :href="`/add_picture`">
+              <template #icon>
+                <FileAddOutlined />
+              </template>
+              添加图片
+            </a-button>
+          </a-tooltip>
+        </a-space>
       </a-col>
     </a-row>
 
