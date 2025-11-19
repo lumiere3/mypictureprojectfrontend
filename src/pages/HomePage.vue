@@ -43,7 +43,7 @@
             <template #cover>
               <img
                 :alt="picture.name"
-                :src="picture.url"
+                :src="picture.thumbnailUrl ?? picture.url"
                 style="height: 240px; object-fit: cover"
               />
             </template>
@@ -92,10 +92,10 @@ const searchParams = reactive<API.PictureQueryRequest>({
 //分页参数
 const pagination = computed(() => {
   return {
-    columns: searchParams.current,
+    column: searchParams.current,
     pageSize: searchParams.pageSize,
     total: total.value,
-    onchange: (page: number, pageSize: number) => {
+    onChange: (page: number, pageSize: number) => {
       searchParams.current = page
       searchParams.pageSize = pageSize
       fetchData()
