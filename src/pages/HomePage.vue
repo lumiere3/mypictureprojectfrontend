@@ -16,7 +16,7 @@
       <a-tab-pane key="all" tab="全部" />
       <a-tab-pane v-for="category in categoryList" :tab="category" :key="category" />
     </a-tabs>
-     <!-- 标签-->
+    <!-- 标签-->
     <div class="tags-bar">
       <span style="margin-right: 8px">标签：</span>
       <a-space :size="[0, 8]" wrap>
@@ -71,6 +71,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import {
   listPictureTagCategoryUsingGet,
   listPictureVoByPageUsingPost,
+  listPictureVoByPageWithCacheUsingPost,
 } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
@@ -114,13 +115,13 @@ const fetchData = async () => {
     params.category = selectedCategory.value
   }
   // 标签的处理
-  selectedTags.value.forEach((useTag,index) => {
+  selectedTags.value.forEach((useTag, index) => {
     if (useTag) {
       params.tags.push(tagsList.value[index])
     }
   })
 
-  const res = await listPictureVoByPageUsingPost(params)
+  const res = await listPictureVoByPageWithCacheUsingPost(params)
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
@@ -166,11 +167,10 @@ const doClickPicture = (picture: API.Picture) => {
     path: `/picture/${picture.id}`,
   })
 }
-
 </script>
 
 <style scoped>
-#homePage{
+#homePage {
   margin-bottom: 12px;
 }
 .search-bar {
