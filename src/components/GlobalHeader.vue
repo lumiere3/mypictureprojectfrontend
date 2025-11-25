@@ -30,7 +30,7 @@
                 <a-menu>
                   <a-menu-item @click="toUserPage">
                     <UserOutlined />
-                    个人中心
+                    个人信息
                   </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
@@ -83,6 +83,12 @@ const originItems = [
     icon: () => h(EditOutlined),
     label: '图片管理',
     title: '图片管理',
+  },
+  {
+    key: '/admin/spaceManage',
+    icon: () => h(EditOutlined),
+    label: '空间管理',
+    title: '空间管理',
   },
   {
     key: 'others',

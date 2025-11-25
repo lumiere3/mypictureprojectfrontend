@@ -23,7 +23,7 @@
               allow-clear
             />
           </a-form-item>
-          <a-form-item name="reviewStatus" label="图片标签">
+          <a-form-item name="reviewStatus" label="审核状态">
             <a-select
               v-model:value="searchParams.reviewStatus"
               placeholder="输入审核状态"
