@@ -1,6 +1,10 @@
 <template>
   <div id="globalSider">
-    <a-layout-sider width="200">
+    <a-layout-sider
+      width="200"
+      v-if="loginUserStore.loginUser.id"
+      breakpoint="lg"
+    >
       <a-menu
         v-model:selectedKeys="current"
         mode="inline"
@@ -28,6 +32,8 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import { userLogoutUsingPost } from '@/api/userController'
 //const current = ref<string[]>(['mail']);
 const loginUserStore = useLoginUserStore()
+
+
 // 菜单项
 const menuItems = [
   {

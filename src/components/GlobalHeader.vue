@@ -29,8 +29,14 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item @click="toUserPage">
-                    <UserOutlined />
+                    <ContactsOutlined  />
                     个人信息
+                  </a-menu-item>
+                  <a-menu-item>
+                    <router-link to="/my_space">
+                      <UserOutlined/>
+                      我的空间
+                    </router-link>
                   </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
@@ -51,7 +57,7 @@
 
 <script lang="ts" setup>
 import { computed, h, reactive, ref } from 'vue'
-import { HomeOutlined, GithubOutlined, EditOutlined,PlusSquareOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, GithubOutlined, EditOutlined,PlusSquareOutlined, LogoutOutlined,ContactsOutlined,UserOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'

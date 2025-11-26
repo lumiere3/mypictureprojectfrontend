@@ -26,6 +26,7 @@ import { uploadPictureByUrlUsingPost, uploadPictureUsingPost } from '@/api/pictu
 
 interface Props {
   picture?: API.PictureVO
+  spaceId?: number
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 //用户输入图片文件url地址
@@ -41,6 +42,7 @@ const handleUpload = async () => {
   loading.value = true
   try {
     const params: API.PictureUploadRequest = {fileUrl : fileUrl.value}
+    params.spaceId = props.spaceId
     if (!params.fileUrl) {
       message.error('请输入图片地址')
       return
