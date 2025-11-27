@@ -99,10 +99,13 @@
         </template>
         <!-- 审核信息 -->
         <template v-if="column.dataIndex === 'reviewMessage'">
-          <a-space wrap>
+          <a-space wrap v-if="!record.spaceId">
             <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
             <div>审核信息：{{ record.reviewMessage ?? '-' }}</div>
             <div>审核人：{{ record.reviewerId ?? '-' }}</div>
+          </a-space>
+          <a-space v-else>
+            <div>私有图库无需审核</div>
           </a-space>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
@@ -116,6 +119,8 @@
         <template v-else-if="column.key === 'action'">
           <div>
             <a-space wrap>
+              <!-- 公开图片 -->
+              <template v-if="!record.spaceId">
               <a-button
                 v-if="PIC_REVIEW_STATUS_ENUM.PASS !== record.reviewStatus"
                 @click="doReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
@@ -135,6 +140,20 @@
                 </template>
                 审核拒绝
               </a-button>
+              </template>
+              <!-- 私有图片 -->
+              <template v-else>
+                <a-tooltip
+                  placement="top"
+                  title="私有图片无法审核"
+                >
+                  <a-button disabled>
+                    <CloseSquareOutlined />
+                    私有图片
+                  </a-button>
+                </a-tooltip>
+              </template>
+
               <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank">
                 <template #icon>
                   <EditOutlined />
@@ -194,15 +213,10 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import {
   deletePictureUsingPost,
   doPictureReviewUsingPost,
-  getPictureByIdUsingGet,
   listPictureByPageUsingPost,
-  listPictureVoUsingPost,
-  updatePictureUsingPost,
 } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import { useLoginPictureStore } from '@/stores/useLoginPictureStore'
-import PictureAddRequest = API.PictureAddRequest
 import {
   PIC_REVIEW_STATUS_ENUM,
   PIC_REVIEW_STATUS_MAP,
@@ -290,6 +304,7 @@ const pagination = computed(() => {
 const fetchData = async () => {
   const res = await listPictureByPageUsingPost({
     ...searchParams,
+    nullSpaceId: true,
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []

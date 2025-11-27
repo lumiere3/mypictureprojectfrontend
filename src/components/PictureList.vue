@@ -36,10 +36,17 @@
                 <editOutlined />
                 编辑
               </a-space>
-              <a-space @click="e => doDelete(picture, e)">
-                <deleteOutlined />
-                删除
-              </a-space>
+              <a-popconfirm
+                title="确定删除图片吗？"
+                okText="确定"
+                cancelText="取消"
+                @confirm="e => doDelete(picture, e)"
+                @click="e => e.stopPropagation()">
+                <a-space>
+                  <deleteOutlined />
+                  删除
+                </a-space>
+              </a-popconfirm>
             </template>
 
           </a-card>
@@ -63,6 +70,7 @@ interface Props {
   dataList?: API.Picture[]
   loading?: boolean
   showOp?: boolean
+  onReload?: () => void
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -44,8 +44,6 @@ import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   addSpaceUsingPost,
-  editSpaceUsingPost,
-  getSpaceByIdUsingGet,
   getSpaceVoByIdUsingGet,
   listSpaceLevelUsingGet, updateSpaceUsingPost,
 } from '@/api/spaceController'
@@ -82,7 +80,7 @@ const handleSubmit = async (values: any) => {
     message.success('操作成功')
     // 跳转到空间详情页
     router.push({
-      path: `/space/${res.data.data}`,
+      path: `/space/${spaceId ?? res.data.data}`,
     })
   } else {
     message.error('操作失败 ' + res.data.message)

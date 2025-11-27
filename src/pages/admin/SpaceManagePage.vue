@@ -107,18 +107,10 @@ import {
   EditOutlined,
   SearchOutlined,
   FileAddOutlined,
-  CheckSquareOutlined,
-  CloseSquareOutlined,
 } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
-import { doPictureReviewUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
-import {
-  PIC_REVIEW_STATUS_ENUM,
-  PIC_REVIEW_STATUS_MAP,
-  PIC_REVIEW_STATUS_OPTIONS,
-} from '@/constants/picture'
 import { deleteSpaceUsingPost, listSpaceByPageUsingPost } from '@/api/spaceController'
 import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space'
 import { formatSize } from '@/utils'
@@ -214,12 +206,12 @@ const doTableChange = (page: any) => {
   fetchData()
 }
 
-// 删除图片
+// 删除空间
 const doDelete = async (id: string) => {
   if (!id) return
   const res = await deleteSpaceUsingPost({ id })
   if (res.data.code === 0) {
-    message.success('删除图片成功!')
+    message.success('删除成功!')
     //更新数据
     fetchData()
   } else {

@@ -200,14 +200,12 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import {
   addUserUsingPost,
   deleteUserUsingPost,
-  getUserByIdUsingGet,
   listUserPageVoUsingPost,
   updateUserUsingPost,
 } from '@/api/userController'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
-import UserAddRequest = API.UserAddRequest
 import AvatarUpload from '@/components/AvatarUpload.vue'
 
 //当前的登录用户

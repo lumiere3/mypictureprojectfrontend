@@ -16,9 +16,13 @@
         </a-tooltip>
       </a-space>
     </a-flex>
+   <!-- 搜索页面 --->
+    <a-space>
+      <picture-search-form></picture-search-form>
+    </a-space>
     <!------------展示图片列表---------->
     <!-- 图片展示列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :showOp="true" />
+    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchAfterDoingDelete"/>
     <!-- 分页 -->
     <a-pagination
       v-model:current="searchParams.current"
@@ -32,14 +36,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { deleteSpaceUsingPost, getSpaceVoByIdUsingGet } from '@/api/spaceController'
+import {  onMounted, reactive, ref } from 'vue'
+import {  getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import { listPictureVoByPageWithCacheUsingPost } from '@/api/pictureController'
 import { formatSize } from '@/utils'
 import PictureList from '@/components/PictureList.vue'
+import PictureSearchForm from '@/components/PictureSearchForm.vue'
 
 
 //loginUserStore 来校验用户的权限 -> 只有管理员和空间的上传者才可以修改和删除空间
@@ -96,7 +101,15 @@ const onChangePage = (page: number, pageSize: number) => {
   fetchData()
 }
 
-//获取数据
+/**
+ * 删除图片逻辑, 删除图片后刷新页面,获取图片列表和空间 信息
+ */
+const fetchAfterDoingDelete = async () => {
+  await fetchData()
+  await fetchDetail()
+}
+
+
 const fetchData = async () => {
   loading.value = true
   const params = {

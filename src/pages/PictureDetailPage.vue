@@ -179,14 +179,23 @@ const doDelete = async () => {
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除图片成功!')
+    route.back()
   } else {
     message.error('删除失败')
   }
 }
 // 编辑图片
+// 编辑
 const doEdit = () => {
-  router.push('/add_picture?id=' + picture.value.id)
+  router.push({
+    path: '/add_picture',
+    query: {
+      id: picture.value.id,
+      spaceId: picture.value.spaceId
+    }
+  })
 }
+
 //下载图片
 const doDownload = () => {
   downloadImage(picture.value.url)
