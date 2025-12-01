@@ -18,8 +18,9 @@
     </a-flex>
    <!-- 搜索页面 --->
     <a-space>
-      <picture-search-form></picture-search-form>
+      <picture-search-form :onSearch="onSearch"></picture-search-form>
     </a-space>
+    <div style="margin-top: 16px"></div>
     <!------------展示图片列表---------->
     <!-- 图片展示列表 -->
     <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchAfterDoingDelete"/>
@@ -88,7 +89,7 @@ const total = ref(0)
 const loading = ref(true)
 
 // 定义一个搜索条件
-const searchParams = reactive<API.PictureQueryRequest>({
+const searchParams = ref<API.PictureQueryRequest>({
   current: 1,
   pageSize: 12,
   sortField: 'createTime',
@@ -96,8 +97,8 @@ const searchParams = reactive<API.PictureQueryRequest>({
 })
 
 const onChangePage = (page: number, pageSize: number) => {
-  searchParams.current = page
-  searchParams.pageSize = pageSize
+  searchParams.value.current = page
+  searchParams.value.pageSize = pageSize
   fetchData()
 }
 
@@ -114,7 +115,7 @@ const fetchData = async () => {
   loading.value = true
   const params = {
     spaceId: props.id,
-    ...searchParams,
+    ...searchParams.value,
   }
 
   const res = await listPictureVoByPageWithCacheUsingPost(params)
@@ -130,6 +131,18 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData()
 })
+
+// 条件搜索
+const onSearch =  (params: API.PictureQueryRequest) => {
+  searchParams.value = {
+    ...searchParams.value,
+    ...params,
+    current: 1,
+  }
+  fetchData()
+}
+
+
 </script>
 
 <style scoped>
