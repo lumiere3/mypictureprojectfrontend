@@ -89,7 +89,7 @@
                 </template>
                 搜索
               </a-button>
-              <a-button  html-type="reset" size="middle" @click="doReset">
+              <a-button html-type="reset" size="middle" @click="doReset">
                 <template #icon>
                   <RedoOutlined />
                 </template>
@@ -103,13 +103,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { SearchOutlined ,RedoOutlined } from '@ant-design/icons-vue'
+import { SearchOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
-import { PIC_REVIEW_STATUS_OPTIONS } from '@/constants/picture'
 import dayjs, { Dayjs } from 'dayjs'
-import { listPictureTagCategoryUsingGet } from '@/api/pictureController'
+import {
+  listPictureTagCategoryUsingGet,
+  searchPictureByColorUsingPost,
+} from '@/api/pictureController'
 import { message } from 'ant-design-vue'
-import SpaceDetailPage from '@/pages/SpaceDetailPage.vue'
+
 
 interface Props {
   onSearch?: (searchParams: API.PictureQueryRequest) => void
@@ -138,23 +140,22 @@ const onChange = (date: Dayjs) => {
 }
 // 改变时间
 const onRangeChange = (dates: any, dateStrings: string[]) => {
-  if(dates?.length >= 2){
+  if (dates?.length >= 2) {
     searchParams.startEditTime = dates[0].toDate()
     searchParams.endEditTime = dates[1].toDate()
-  }else{
+  } else {
     searchParams.startEditTime = undefined
     searchParams.endEditTime = undefined
   }
 }
 
 //预设的时间范围
-const rangePresets =
-  ref([
-    { label: '最近7天', value: [dayjs().add(-7, 'd'), dayjs()] },
-    { label: '最近14天', value: [dayjs().add(-14, 'd'), dayjs()] },
-    { label: '最近一个月', value: [dayjs().add(-30, 'd'), dayjs()] },
-    { label: '最近三个月', value: [dayjs().add(-90, 'd'), dayjs()] },
-  ])
+const rangePresets = ref([
+  { label: '最近7天', value: [dayjs().add(-7, 'd'), dayjs()] },
+  { label: '最近14天', value: [dayjs().add(-14, 'd'), dayjs()] },
+  { label: '最近一个月', value: [dayjs().add(-30, 'd'), dayjs()] },
+  { label: '最近三个月', value: [dayjs().add(-90, 'd'), dayjs()] },
+])
 // 获取后端的默认分类
 const categoryOptions = ref<string[]>([])
 const tagsOptions = ref<string[]>([])
@@ -194,6 +195,7 @@ const doReset = () => {
   //重新搜索
   props.onSearch?.(searchParams)
 }
+
 
 </script>
 

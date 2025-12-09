@@ -42,6 +42,20 @@
             <a-descriptions-item label="图片大小">{{
               formatSize(picture.picSize)
             }}</a-descriptions-item>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+        backgroundColor: toHexColor(picture.picColor),
+        width: '16px',
+        height: '16px',
+      }"
+                />
+              </a-space>
+            </a-descriptions-item>
+
           </a-descriptions>
           <!-- 补充一个操作 -->
           <a-space wrap>
@@ -125,7 +139,7 @@ import {
 } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
-import { downloadImage, formatSize } from '@/utils'
+import { downloadImage, formatSize, toHexColor } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import router from '@/router'
 import { PIC_REVIEW_STATUS_MAP } from '@/constants/picture'

@@ -1,29 +1,41 @@
 <template>
   <div id="SpaceDetailPage">
     <!-----------展示空间信息----------->
-    <a-flex justify="space-between" >
+    <a-flex justify="space-between">
       <!-- 空间名称 -->
-      <h2>{{space.spaceName}} (私有空间) </h2>
+      <h2>{{ space.spaceName }} (私有空间)</h2>
       <a-space size="middle">
-        <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank">上传图片</a-button>
+        <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank"
+          >上传图片</a-button
+        >
         <!-- 当前空间的容量 -->
         <a-tooltip :title="`空间容量: ${formatSize(space.totalSize)}/${formatSize(space.maxSize)}`">
           <a-progress
             type="circle"
             size="small"
-            :percent="((space.totalSize *100 / space.maxSize).toFixed(1))">
+            :percent="((space.totalSize * 100) / space.maxSize).toFixed(1)"
+          >
           </a-progress>
         </a-tooltip>
       </a-space>
     </a-flex>
-   <!-- 搜索页面 --->
+    <!-- 搜索页面 --->
     <a-space>
       <picture-search-form :onSearch="onSearch"></picture-search-form>
     </a-space>
+    <!-- 按颜色搜索 -->
+    <a-form-item label="按颜色搜索" style="margin-top: 16px">
+      <colorPicker format="hex" @pureColorChange="onColorChange" />
+    </a-form-item>
     <div style="margin-top: 16px"></div>
     <!------------展示图片列表---------->
     <!-- 图片展示列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchAfterDoingDelete"/>
+    <PictureList
+      :dataList="dataList"
+      :loading="loading"
+      :showOp="true"
+      :onReload="fetchAfterDoingDelete"
+    />
     <!-- 分页 -->
     <a-pagination
       v-model:current="searchParams.current"
@@ -32,20 +44,27 @@
       @change="onChangePage"
       style="text-align: right"
       showQuickJumper
-      showSizeChanger />
+      showSizeChanger
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {  onMounted, reactive, ref } from 'vue'
-import {  getSpaceVoByIdUsingGet } from '@/api/spaceController'
+import { onMounted, reactive, ref } from 'vue'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
-import { listPictureVoByPageWithCacheUsingPost } from '@/api/pictureController'
+import {
+  listPictureVoByPageWithCacheUsingPost,
+  searchPictureByColorUsingPost,
+} from '@/api/pictureController'
 import { formatSize } from '@/utils'
 import PictureList from '@/components/PictureList.vue'
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
+import { ColorPicker } from 'vue3-colorpicker'
+import 'vue3-colorpicker/style.css'
+
 
 
 //loginUserStore 来校验用户的权限 -> 只有管理员和空间的上传者才可以修改和删除空间
@@ -110,7 +129,6 @@ const fetchAfterDoingDelete = async () => {
   await fetchDetail()
 }
 
-
 const fetchData = async () => {
   loading.value = true
   const params = {
@@ -133,7 +151,7 @@ onMounted(() => {
 })
 
 // 条件搜索
-const onSearch =  (params: API.PictureQueryRequest) => {
+const onSearch = (params: API.PictureQueryRequest) => {
   searchParams.value = {
     ...searchParams.value,
     ...params,
@@ -142,7 +160,20 @@ const onSearch =  (params: API.PictureQueryRequest) => {
   fetchData()
 }
 
-
+//搜索图片
+const onColorChange = async (color: string) => {
+  const res = await searchPictureByColorUsingPost({
+    picColor: color,
+    spaceId: props.id,
+  })
+  if (res.data.code === 0 && res.data.data) {
+    const data = res.data.data ?? []
+    dataList.value = data
+    total.value = data.length
+  } else {
+    message.error('获取数据失败，' + res.data.message)
+  }
+}
 </script>
 
 <style scoped>
