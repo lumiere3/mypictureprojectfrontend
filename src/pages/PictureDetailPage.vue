@@ -48,10 +48,10 @@
                 <div
                   v-if="picture.picColor"
                   :style="{
-        backgroundColor: toHexColor(picture.picColor),
-        width: '16px',
-        height: '16px',
-      }"
+                    backgroundColor: toHexColor(picture.picColor),
+                    width: '16px',
+                    height: '16px',
+                    }"
                 />
               </a-space>
             </a-descriptions-item>
