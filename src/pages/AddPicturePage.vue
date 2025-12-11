@@ -19,6 +19,18 @@
         <UrlPictureUpload :picture="picture" :spaceId="spaceId" :on-success="onSuccess"></UrlPictureUpload>
       </a-tab-pane>
     </a-tabs>
+    <!-- 编辑图片 -->
+    <div v-if="picture" class="edit-bar">
+      <a-button  @click="doEditPicture">编辑图片</a-button>
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onSuccess"
+      />
+
+    </div>
     <!-- 图片信息表单 -->
     <a-form
       v-if="picture"
@@ -60,6 +72,7 @@
         <a-button type="primary" html-type="submit" style="width: 100%">提交</a-button>
       </a-form-item>
     </a-form>
+
   </div>
 </template>
 
@@ -74,6 +87,8 @@ import {
 } from '@/api/pictureController'
 import { useRoute, useRouter } from 'vue-router'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 // 一个用于接收前端输入的值
 
 const pictureForm = reactive<API.PictureEditRequest>({})
@@ -181,6 +196,22 @@ const getOldPicture = async () => {
 onMounted(() => {
   getOldPicture()
 })
+
+// 图片编辑弹窗引用
+const imageCropperRef = ref()
+
+// 编辑图片
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
 </script>
 
 <style scoped>
