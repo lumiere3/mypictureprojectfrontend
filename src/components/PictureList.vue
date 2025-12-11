@@ -32,6 +32,10 @@
             </a-card-meta>
             <!--*--  卡片的快捷操作 ----->
             <template #actions v-if="showOp">
+              <a-space @click="e => doShare(picture, e)">
+                <ShareAltOutlined />
+                分享
+              </a-space>
               <a-space @click="e => doSearch(picture, e)">
                 <SearchOutlined />
                 搜索
@@ -57,6 +61,7 @@
         </a-list-item>
       </template>
     </a-list>
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -66,10 +71,12 @@ import { useRouter } from 'vue-router'
 import {
   DeleteOutlined,
   EditOutlined,
-  SearchOutlined
+  SearchOutlined,
+  ShareAltOutlined
 } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
+import ShareModal from '@/components/ShareModal.vue'
 
 interface Props {
   dataList?: API.Picture[]
@@ -127,6 +134,22 @@ const doSearch = (picture, e) => {
   e.stopPropagation()
   window.open(`/search_picture?pictureId=${picture.id}`)
 }
+
+//分享图片
+// 分享弹窗引用
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const doShare = (picture: API.PictureVO, e: Event) => {
+  e.stopPropagation()
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
+
 
 
 </script>

@@ -111,6 +111,12 @@
               </template>
               下载图片
             </a-button>
+            <a-button type="primary" ghost @click="doShare">
+              分享图片
+              <template #icon>
+                <ShareAltOutlined />
+              </template>
+            </a-button>
             <!-- 快捷审核  -->
 <!--            <template v-if="canReview">
               <a-button  @click="showReview">
@@ -124,12 +130,12 @@
         </a-card>
       </a-col>
     </a-row>
-
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { EditOutlined, DeleteOutlined, DownloadOutlined ,CloseSquareOutlined,SelectOutlined} from '@ant-design/icons-vue'
+import { EditOutlined, DeleteOutlined, DownloadOutlined ,ShareAltOutlined,SelectOutlined} from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
   deletePictureUsingPost, getPictureByIdUsingGet,
@@ -143,6 +149,7 @@ import { downloadImage, formatSize, toHexColor } from '@/utils'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import router from '@/router'
 import { PIC_REVIEW_STATUS_MAP } from '@/constants/picture'
+import ShareModal from '@/components/ShareModal.vue'
 
 //loginUserStore 来校验用户的权限 -> 只有管理员和图片的上传者才可以修改和删除图片
 const loginUserStore = useLoginUserStore()
@@ -214,6 +221,23 @@ const doEdit = () => {
 const doDownload = () => {
   downloadImage(picture.value.url)
 }
+
+// share picture
+// 分享弹窗引用
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
+}
+
+
+
 
 //权限检测 -> 是否能审核 -> 只有管理员可以
 

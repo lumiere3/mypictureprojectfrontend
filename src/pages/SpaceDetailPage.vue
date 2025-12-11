@@ -5,9 +5,15 @@
       <!-- 空间名称 -->
       <h2>{{ space.spaceName }} (私有空间)</h2>
       <a-space size="middle">
-        <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank"
-          >上传图片</a-button
+        <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank">
+          <UploadOutlined />
+          上传图片
+        </a-button
         >
+        <a-button  @click="doBatchEdit">
+          <EditOutlined />
+          批量编辑
+        </a-button>
         <!-- 当前空间的容量 -->
         <a-tooltip :title="`空间容量: ${formatSize(space.totalSize)}/${formatSize(space.maxSize)}`">
           <a-progress
@@ -46,6 +52,13 @@
       showQuickJumper
       showSizeChanger
     />
+    <BatchEditPicModal
+      ref="batchEditPictureModalRef"
+      :spaceId="id"
+      :pictureList="dataList"
+      :onSuccess="onBatchEditPictureSuccess"
+    />
+
   </div>
 </template>
 
@@ -64,6 +77,8 @@ import PictureList from '@/components/PictureList.vue'
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
 import { ColorPicker } from 'vue3-colorpicker'
 import 'vue3-colorpicker/style.css'
+import BatchEditPicModal from '@/components/BatchEditPicModal.vue'
+import { EditOutlined,UploadOutlined } from '@ant-design/icons-vue'
 
 
 
@@ -174,6 +189,23 @@ const onColorChange = async (color: string) => {
     message.error('获取数据失败，' + res.data.message)
   }
 }
+
+// 批量编辑弹窗引用
+const batchEditPictureModalRef = ref()
+
+// 批量编辑成功后，刷新数据
+const onBatchEditPictureSuccess = () => {
+  fetchData()
+}
+
+// 打开批量编辑弹窗
+const doBatchEdit = () => {
+  if (batchEditPictureModalRef.value) {
+    batchEditPictureModalRef.value.openModal()
+  }
+}
+
+
 </script>
 
 <style scoped>
